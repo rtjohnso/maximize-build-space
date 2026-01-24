@@ -138,8 +138,10 @@ runs:
 
           MNT="/mnt"
           echo "Checking if ${MNT} is mounted..."
-          df | grep " ${MNT}"
-          if [[ $? -ne 0 ]]; then
+          set +e
+          MNT_EXISTS=$(df 2>/dev/null /mnt | grep " ${MNT}")
+          set -e
+          if [[ -z "${MNT_EXISTS}" ]]; then
             echo "${MNT} is not mounted, so skipping LVM creation"
             lsblk
             cat /etc/fstab
