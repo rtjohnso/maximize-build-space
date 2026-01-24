@@ -136,6 +136,13 @@ runs:
           fi
           echo "... done"
 
+          mnt_exists=`cat /proc/mounts | cut -f2 -d" " | grep "^/mnt$"`
+          if [[ -z "$mnt_exists" ]]; then
+            echo "/mnt is not mounted, so skipping LVM creation"
+            lsblk
+            exit 0
+          fi
+
           VG_NAME=buildvg
 
           # github runners have an active swap file in /mnt/swapfile
