@@ -153,7 +153,7 @@ runs:
           # we want to reuse the temp disk, so first unmount swap and clean the temp disk
           echo "Unmounting and removing swap file."
           sudo swapoff -a
-          sudo rm -f /mnt/swapfile
+          sudo rm -f ${MNT}/swapfile
 
           echo "Creating LVM Volume."
           echo "  Creating LVM PV on root fs."
@@ -169,7 +169,7 @@ runs:
           # create pv on temp disk
           echo "  Creating LVM PV on temp fs."
           TMP_RESERVE_KB=$(expr ${{ inputs.temp-reserve-mb }} \* 1024)
-          TMP_FREE_KB=$(df --block-size=1024 --output=avail /mnt | tail -1)
+          TMP_FREE_KB=$(df --block-size=1024 --output=avail ${MNT} | tail -1)
           TMP_LVM_SIZE_KB=$(expr $TMP_FREE_KB - $TMP_RESERVE_KB)
           TMP_LVM_SIZE_BYTES=$(expr $TMP_LVM_SIZE_KB \* 1024)
           sudo touch "${{ inputs.tmp-pv-loop-path }}" && sudo fallocate -z -l "${TMP_LVM_SIZE_BYTES}" "${{ inputs.tmp-pv-loop-path }}"
