@@ -111,40 +111,41 @@ runs:
           fi
           echo
 
-          # # store owner of $GITHUB_WORKSPACE in case the action deletes it
-          # WORKSPACE_OWNER="$(stat -c '%U:%G' "${GITHUB_WORKSPACE}")"
+          # store owner of $GITHUB_WORKSPACE in case the action deletes it
+          WORKSPACE_OWNER="$(stat -c '%U:%G' "${GITHUB_WORKSPACE}")"
 
-          # # ensure mount path exists before the action
-          # sudo mkdir -p "${BUILD_MOUNT_PATH}"
-          # sudo find "${BUILD_MOUNT_PATH}" -maxdepth 0 ! -empty -exec echo 'WARNING: directory [{}] is not empty, data loss might occur. Content:' \; -exec ls -al "{}" \;
+          # ensure mount path exists before the action
+          sudo mkdir -p "${BUILD_MOUNT_PATH}"
+          sudo find "${BUILD_MOUNT_PATH}" -maxdepth 0 ! -empty -exec echo 'WARNING: directory [{}] is not empty, data loss might occur. Content:' \; -exec ls -al "{}" \;
 
-          # echo "Removing unwanted software... "
-          # if [[ ${{ inputs.remove-dotnet }} == 'true' ]]; then
-          #   sudo rm -rf /usr/share/dotnet
-          # fi
-          # if [[ ${{ inputs.remove-android }} == 'true' ]]; then
-          #   sudo rm -rf /usr/local/lib/android
-          # fi
-          # if [[ ${{ inputs.remove-haskell }} == 'true' ]]; then
-          #   sudo rm -rf /opt/ghc
-          # fi
-          # if [[ ${{ inputs.remove-codeql }} == 'true' ]]; then
-          #   sudo rm -rf /opt/hostedtoolcache/CodeQL
-          # fi
-          # if [[ ${{ inputs.remove-docker-images }} == 'true' ]]; then
-          #   sudo docker image prune --all --force
-          # fi
-          # echo "... done"
+          echo "Removing unwanted software... "
+          if [[ ${{ inputs.remove-dotnet }} == 'true' ]]; then
+            sudo rm -rf /usr/share/dotnet
+          fi
+          if [[ ${{ inputs.remove-android }} == 'true' ]]; then
+            sudo rm -rf /usr/local/lib/android
+          fi
+          if [[ ${{ inputs.remove-haskell }} == 'true' ]]; then
+            sudo rm -rf /opt/ghc
+          fi
+          if [[ ${{ inputs.remove-codeql }} == 'true' ]]; then
+            sudo rm -rf /opt/hostedtoolcache/CodeQL
+          fi
+          if [[ ${{ inputs.remove-docker-images }} == 'true' ]]; then
+            sudo docker image prune --all --force
+          fi
+          echo "... done"
 
           MNT="/mnt"
-          echo -n "Checking if ${MNT} is mounted..."
-          mnt_exists=$(df 2>/dev/null | grep " ${MNT}\$")
-          if [[ -z "${mnt_exists}" ]]; then
+          echo "Checking if ${MNT} is mounted..."
+          df | grep " ${MNT}"
+          if [[ $? -ne 0 ]]; then
             echo "${MNT} is not mounted, so skipping LVM creation"
             lsblk
+            cat /etc/fstab
             exit 0
           else
-            echo " yes"
+            echo "Found ${MNT}"
           fi
 
           VG_NAME=buildvg
