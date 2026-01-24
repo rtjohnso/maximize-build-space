@@ -137,7 +137,7 @@ runs:
           echo "... done"
 
           mnt_exists=$(cat /proc/mounts | cut -f2 -d" " | grep "^/mnt$")
-          if [[ -z "${mnt_exists}" ]]; then
+          if [[ "${mnt_exists}" == "" ]]; then
             echo "/mnt is not mounted, so skipping LVM creation"
             lsblk
             exit 0
