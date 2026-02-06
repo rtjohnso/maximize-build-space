@@ -138,16 +138,13 @@ runs:
 
           MNT="/mnt"
           echo "Checking if ${MNT} is mounted..."
-          set +e
-          MNT_EXISTS=$(df 2>/dev/null /mnt | grep " ${MNT}")
-          set -e
-          if [[ -z "${MNT_EXISTS}" ]]; then
+          if mountpoint -q ${MNT}; then
             echo "${MNT} is not mounted, so skipping LVM creation"
             lsblk
             cat /etc/fstab
             exit 0
           else
-            echo "Found ${MNT}"
+            echo "Found mount point ${MNT}, creating LVM volume group"
           fi
 
           VG_NAME=buildvg
