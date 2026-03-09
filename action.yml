@@ -139,12 +139,12 @@ runs:
           MNT="/mnt"
           echo "Checking if ${MNT} is mounted..."
           if mountpoint -q ${MNT}; then
+            echo "Found mount point ${MNT}, creating LVM volume group"
+          else
             echo "${MNT} is not mounted, so skipping LVM creation"
             lsblk
             cat /etc/fstab
             exit 0
-          else
-            echo "Found mount point ${MNT}, creating LVM volume group"
           fi
 
           VG_NAME=buildvg
